@@ -1,25 +1,30 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User, UserRole } from '../entities/user.entity';
+import { User } from '../users/user.entity';
+import { Role } from '../roles/role.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepo: Repository<User>,
-    private jwt: JwtService,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
+    private readonly jwt: JwtService,
   ) {}
 
   async register(userData: { name: string; email: string; password: string; role: string }) {
     const hashed = await bcrypt.hash(userData.password, 10);
 
-    // ✅ cast role to UserRole
-    const user = this.userRepo.create({ 
-      ...userData, 
-      password: hashed, 
-      role: userData.role as UserRole 
+    const role = await this.roleRepo.findOne({ where: { name: userData.role } });
+    if (!role) throw new NotFoundException(`Role with name ${userData.role} not found`);
+
+    const user = this.userRepo.create({
+      username: userData.name,
+      email: userData.email,
+      password: hashed,
+      role,
     });
 
     await this.userRepo.save(user);

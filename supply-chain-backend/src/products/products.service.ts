@@ -1,9 +1,9 @@
 import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Product } from '../entities/product.entity';
-import { User } from '../entities/user.entity';
-import { TrackingEvent } from '../entities/tracking-event.entity';
+import { Product } from './product.entity';
+import { User } from '../users/user.entity';
+import { TrackingEvent } from '../tracking/tracking-event.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,7 +15,7 @@ export class ProductsService {
   ) {}
 
   async createProduct(user: User, dto: CreateProductDto) {
-    if (user.role !== 'producer') throw new ForbiddenException('Only producers can create products');
+    if (user.role.name !== 'producer') throw new ForbiddenException('Only producers can create products');
     const product = this.productRepo.create({
       id: uuidv4(),
       name: dto.name,

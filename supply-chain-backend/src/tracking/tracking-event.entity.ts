@@ -1,7 +1,7 @@
 // src/entities/tracking-event.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Product } from './product.entity';
-import { User } from './user.entity';
+import { Product } from '../products/product.entity';
+import { User } from '../users/user.entity';
 
 @Entity('tracking_events')
 export class TrackingEvent {

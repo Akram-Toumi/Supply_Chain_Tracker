@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TrackingEvent } from '../entities/tracking-event.entity';
-import { Product } from '../entities/product.entity';
-import { User } from '../entities/user.entity';
+import { TrackingEvent } from './tracking-event.entity';
+import { Product } from '../products/product.entity';
+import { User } from '../users/user.entity';
 import { CreateTrackingDto } from './dto/create-tracking.dto';
 
 @Injectable()

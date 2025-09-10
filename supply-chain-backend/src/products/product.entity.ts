@@ -1,7 +1,8 @@
 // src/entities/product.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-import { User } from './user.entity';
-import { TrackingEvent } from './tracking-event.entity';
+import { User } from '../users/user.entity';
+import { TrackingEvent } from '../tracking/tracking-event.entity';
+import { Warehouse } from '../warehouse/warehouse.entity';
 
 @Entity('products')
 export class Product {
@@ -28,4 +29,7 @@ export class Product {
 
   @OneToMany(() => TrackingEvent, (e) => e.product)
   events: TrackingEvent[];
+
+  @ManyToOne(() => Warehouse, (warehouse) => warehouse.products, { onDelete: 'SET NULL' })
+  warehouse: Warehouse;
 }
