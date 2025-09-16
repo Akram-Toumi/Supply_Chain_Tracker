@@ -4,7 +4,7 @@ class AuthService {
   private readonly API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
   async signIn(credentials: SignInCredentials): Promise<AuthResponse> {
-    const response = await fetch(`${this.API_URL}/auth/signin`, {
+    const response = await fetch(`${this.API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ class AuthService {
   }
 
   async signUp(credentials: SignUpCredentials): Promise<AuthResponse> {
-    const response = await fetch(`${this.API_URL}/auth/signup`, {
+    const response = await fetch(`${this.API_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,19 +41,6 @@ class AuthService {
     return data;
   }
 
-  async validateToken(token: string): Promise<AuthResponse> {
-    const response = await fetch(`${this.API_URL}/auth/validate`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Invalid token');
-    }
-
-    return response.json();
-  }
 }
 
 export const authService = new AuthService();

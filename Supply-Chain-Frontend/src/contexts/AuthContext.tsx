@@ -20,11 +20,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    // Check for stored auth token and validate it
+    // Check for stored auth token
     const token = localStorage.getItem('auth_token');
     if (token) {
-      // TODO: Validate token with backend
-      setAuthState(prev => ({ ...prev, isLoading: false }));
+      // For now, assume token is valid if present
+      // TODO: Implement proper token validation with backend
+      setAuthState(prev => ({ 
+        ...prev, 
+        isAuthenticated: true, 
+        isLoading: false 
+      }));
     } else {
       setAuthState(prev => ({ ...prev, isLoading: false }));
     }
