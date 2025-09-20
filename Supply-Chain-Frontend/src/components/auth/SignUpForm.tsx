@@ -17,6 +17,7 @@ export default function SignUpForm() {
 
     const formData = new FormData(e.currentTarget);
     const credentials: SignUpCredentials = {
+      name: formData.get('name') as string,
       email: formData.get('email') as string,
       password: formData.get('password') as string,
       confirmPassword: formData.get('confirmPassword') as string,
@@ -47,6 +48,19 @@ export default function SignUpForm() {
           {error}
         </div>
       )}
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+          Username
+        </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          required
+          className="mt-1 block w-full px-3 py-2 bg-background-card border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          placeholder="Enter your username"
+        />
+      </div>
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-300">
           Email

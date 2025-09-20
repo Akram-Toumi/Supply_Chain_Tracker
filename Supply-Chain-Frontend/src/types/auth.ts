@@ -3,7 +3,10 @@ export interface SignInCredentials {
   password: string;
 }
 
-export interface SignUpCredentials extends SignInCredentials {
+export interface SignUpCredentials {
+  name: string;
+  email: string;
+  password: string;
   confirmPassword: string;
   role: UserRole;
 }
@@ -17,10 +20,11 @@ export interface AuthResponse {
 
 export interface User {
   id: string;
+  username: string;
   email: string;
   role: UserRole;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuthState {

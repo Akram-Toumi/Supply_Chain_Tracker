@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthState, User, UserRole } from '../types/auth';
+import { authService } from '../services/authService';
 
 interface AuthContextType extends AuthState {
   login: (user: User) => void;
@@ -20,19 +21,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    // Check for stored auth token
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      // For now, assume token is valid if present
-      // TODO: Implement proper token validation with backend
-      setAuthState(prev => ({ 
-        ...prev, 
-        isAuthenticated: true, 
-        isLoading: false 
-      }));
-    } else {
-      setAuthState(prev => ({ ...prev, isLoading: false }));
-    }
+    const initializeAuth = async () => {
+      try {
+        const validation = await authService.validateToken();
+        if (validation) {
+          setAuthState({
+            user: validation.user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+        } else {
+          setAuthState(prev => ({ ...prev, isLoading: false }));
+        }
+      } catch (error) {
+        console.error('Token validation failed:', error);
+        localStorage.removeItem('auth_token');
+        setAuthState(prev => ({ ...prev, isLoading: false }));
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = (user: User) => {
