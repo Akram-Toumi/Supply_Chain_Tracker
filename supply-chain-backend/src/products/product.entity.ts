@@ -24,6 +24,9 @@ export class Product {
   @Column({ nullable: true })
   currentStatus: string;
 
+  @Column({ nullable: true })
+  blockchainId: number;
+
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
