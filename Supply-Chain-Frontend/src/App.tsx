@@ -1,26 +1,24 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
+
 import ProducerDashboard from './pages/ProducerDashboard';
 import TransporterDashboard from './pages/TransporterDashboard';
 import WarehouseDashboard from './pages/WarehouseDashboard';
 import DistributorDashboard from './pages/DistributorDashboard';
-import ConsumerDashboard from './pages/ConsumerDashboard';
-import { AuthProvider } from './contexts/AuthContext';
+import RetailerDashboard from './pages/RetailerDashboard';
+import { BlockchainProvider } from './contexts/BlockchainContext';
 import './App.css';
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<SignUp />} />
+
       <Route path="/producer/*" element={<ProducerDashboard />} />
       <Route path="/transporter/*" element={<TransporterDashboard />} />
       <Route path="/warehouse/*" element={<WarehouseDashboard />} />
       <Route path="/distributor/*" element={<DistributorDashboard />} />
-      <Route path="/consumer/*" element={<ConsumerDashboard />} />
+      <Route path="/retailer/*" element={<RetailerDashboard />} />
       {/* Add nested routes for each dashboard */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -29,11 +27,11 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </AuthProvider>
+      <BlockchainProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </BlockchainProvider>
   );
 }
 

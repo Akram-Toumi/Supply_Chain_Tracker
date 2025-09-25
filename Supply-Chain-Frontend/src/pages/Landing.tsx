@@ -82,10 +82,10 @@ const Landing = () => {
                 <p className="text-gray-400 leading-relaxed">Track shipments, update delivery status, and manage transportation routes.</p>
               </Link>
 
-              <Link to="/consumer" className="group bg-background-card p-8 rounded-xl border border-gray-800 hover:border-primary/50 transition-all duration-300">
-                <span className="material-icons text-primary text-3xl mb-6 group-hover:scale-110 transition-transform">person</span>
-                <h3 className="text-xl font-semibold mb-4 group-hover:text-primary transition-colors">Consumer Dashboard</h3>
-                <p className="text-gray-400 leading-relaxed">Verify product authenticity, view product history, and track product journey.</p>
+              <Link to="/retailer" className="group bg-background-card p-8 rounded-xl border border-gray-800 hover:border-primary/50 transition-all duration-300">
+                <span className="material-icons text-primary text-3xl mb-6 group-hover:scale-110 transition-transform">store</span>
+                <h3 className="text-xl font-semibold mb-4 group-hover:text-primary transition-colors">Retailer Dashboard</h3>
+                <p className="text-gray-400 leading-relaxed">Manage retail operations, verify product authenticity, and provide customer transparency.</p>
               </Link>
             </div>
           </div>

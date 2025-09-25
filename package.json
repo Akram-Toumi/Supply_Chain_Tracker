@@ -1,19 +1,24 @@
 {
-  "dependencies": {
-    "@openzeppelin/contracts": "^5.4.0"
-  },
-  "name": "project",
+  "name": "supply-chain-tracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Blockchain-based supply chain tracking system",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "truffle compile",
+    "migrate": "truffle migrate",
+    "migrate:reset": "truffle migrate --reset",
+    "test": "truffle test",
+    "dev": "cd Supply-Chain-Frontend && npm run dev",
+    "build": "cd Supply-Chain-Frontend && npm run build"
   },
-  "keywords": [],
+  "keywords": ["blockchain", "supply-chain", "ethereum", "truffle", "react"],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  }
 }

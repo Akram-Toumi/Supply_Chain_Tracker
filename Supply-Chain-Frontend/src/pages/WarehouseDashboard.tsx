@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import Layout from '../layouts/Layout';
 import WarehouseOverview from './warehouse/WarehouseOverview';
-import WarehouseStorage from './warehouse/WarehouseStorage';
 import WarehouseShipments from './warehouse/WarehouseShipments';
+import WarehouseReceive from './warehouse/WarehouseReceive';
 import DashboardSidebar from '../components/DashboardSidebar';
 
 const WarehouseDashboard = () => {
@@ -13,9 +13,9 @@ const WarehouseDashboard = () => {
       icon: 'dashboard'
     },
     {
-      title: 'Storage Management',
-      path: '/warehouse/storage',
-      icon: 'warehouse'
+      title: 'Receive Products',
+      path: '/warehouse/receive',
+      icon: 'inventory'
     },
     {
       title: 'Shipments',
@@ -28,7 +28,7 @@ const WarehouseDashboard = () => {
     <Layout sidebar={<DashboardSidebar items={sidebarItems} />}>
       <Routes>
         <Route path="/" element={<WarehouseOverview />} />
-        <Route path="/storage" element={<WarehouseStorage />} />
+        <Route path="/receive" element={<WarehouseReceive />} />
         <Route path="/shipments" element={<WarehouseShipments />} />
       </Routes>
     </Layout>
