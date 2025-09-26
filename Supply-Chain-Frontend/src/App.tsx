@@ -6,6 +6,7 @@ import TransporterDashboard from './pages/TransporterDashboard';
 import WarehouseDashboard from './pages/WarehouseDashboard';
 import DistributorDashboard from './pages/DistributorDashboard';
 import RetailerDashboard from './pages/RetailerDashboard';
+import CustomerDashboard from './pages/CustomerDashboard';
 import { BlockchainProvider } from './contexts/BlockchainContext';
 import './App.css';
 
@@ -19,6 +20,7 @@ function AppRoutes() {
       <Route path="/warehouse/*" element={<WarehouseDashboard />} />
       <Route path="/distributor/*" element={<DistributorDashboard />} />
       <Route path="/retailer/*" element={<RetailerDashboard />} />
+      <Route path="/customer/*" element={<CustomerDashboard />} />
       {/* Add nested routes for each dashboard */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

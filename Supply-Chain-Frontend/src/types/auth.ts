@@ -11,7 +11,7 @@ export interface SignUpCredentials {
   role: UserRole;
 }
 
-export type UserRole = 'PRODUCER' | 'TRANSPORTER' | 'WAREHOUSE' | 'DISTRIBUTOR' | 'CONSUMER';
+export type UserRole = 'PRODUCER' | 'TRANSPORTER' | 'WAREHOUSE' | 'DISTRIBUTOR' | 'RETAILER' | 'CUSTOMER';
 
 export interface AuthResponse {
   token: string;

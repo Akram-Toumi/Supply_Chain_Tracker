@@ -87,6 +87,12 @@ const Landing = () => {
                 <h3 className="text-xl font-semibold mb-4 group-hover:text-primary transition-colors">Retailer Dashboard</h3>
                 <p className="text-gray-400 leading-relaxed">Manage retail operations, verify product authenticity, and provide customer transparency.</p>
               </Link>
+
+              <Link to="/customer" className="group bg-background-card p-8 rounded-xl border border-gray-800 hover:border-primary/50 transition-all duration-300">
+                <span className="material-icons text-primary text-3xl mb-6 group-hover:scale-110 transition-transform">shopping_cart</span>
+                <h3 className="text-xl font-semibold mb-4 group-hover:text-primary transition-colors">Customer Dashboard</h3>
+                <p className="text-gray-400 leading-relaxed">Browse products in store, scan QR codes, and verify product authenticity and history.</p>
+              </Link>
             </div>
           </div>
 

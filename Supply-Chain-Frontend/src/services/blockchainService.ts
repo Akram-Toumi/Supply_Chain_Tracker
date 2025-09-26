@@ -342,7 +342,43 @@ const SUPPLY_CHAIN_ABI = [
         "type": "string"
       }
     ],
+    "name": "receiveByRetailer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_productId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_location",
+        "type": "string"
+      }
+    ],
     "name": "sellProduct",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_productId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_location",
+        "type": "string"
+      }
+    ],
+    "name": "purchaseProduct",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -445,7 +481,7 @@ const SUPPLY_CHAIN_ABI = [
 ];
 
 // Contract address
-const CONTRACT_ADDRESS = '0x7Ec09D73227fD4aa173860b8Fb85E9CDd404277a';
+const CONTRACT_ADDRESS = '0x17864E042aC345b139b4052b8076d9E4DF2Be3BB';
 
 // Product states enum - must match contract
 export const ProductState = {
@@ -1022,6 +1058,101 @@ class BlockchainService {
     }
   }
 
+  // Receive product by retailer (Retailer only)
+  async receiveByRetailer(productId: number, location: string): Promise<void> {
+    if (!this.contract) {
+      console.error('Contract not initialized. Provider:', this.provider, 'Signer:', this.signer, 'Contract:', this.contract);
+      throw new Error('Contract not initialized. Please ensure your wallet is connected and try refreshing the page.');
+    }
+
+    // Retry mechanism for intermittent network issues
+    const maxRetries = 3;
+    let lastError: any;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // Check if user is authorized as retailer
+        const isRetailer = await this.isRetailer();
+        if (!isRetailer) {
+          throw new Error('Only retailers can receive products. Please ensure your account has retailer permissions.');
+        }
+
+        // Check product state before attempting to receive
+        const productState = await this.getProductState(productId);
+        console.log(`Product ${productId} current state: ${productState} (${this.getProductStateString(productState)})`);
+        console.log(`Product ${productId} must be DISTRIBUTED (state 3) to receive by retailer`);
+        
+        if (productState !== 3) {
+          throw new Error(`Product must be in DISTRIBUTED state (3) to receive by retailer. Current state: ${productState} (${this.getProductStateString(productState)})`);
+        }
+
+        console.log(`Receiving product ${productId} by retailer at ${location} (attempt ${attempt}/${maxRetries})`);
+        
+        // First, let's check if the function exists and estimate gas
+        try {
+          const gasEstimate = await this.contract.receiveByRetailer.estimateGas(productId, location);
+          console.log('Gas estimate for receiveByRetailer:', gasEstimate.toString());
+        } catch (gasError: any) {
+          console.error('Gas estimation failed for receiveByRetailer:', gasError);
+          // Continue with transaction even if gas estimation fails
+        }
+        
+        const tx = await this.contract.receiveByRetailer(productId, location, {
+          gasLimit: 500000 // Set a reasonable gas limit
+        });
+        console.log('Receive by retailer transaction sent:', tx.hash);
+        
+        const receipt = await tx.wait();
+        console.log('Product received by retailer successfully:', {
+          hash: tx.hash,
+          blockNumber: receipt?.blockNumber,
+          gasUsed: receipt?.gasUsed?.toString()
+        });
+        
+        // If we get here, the transaction was successful
+        return;
+        
+      } catch (error: any) {
+        console.error(`Error receiving product by retailer (attempt ${attempt}/${maxRetries}):`, error);
+        lastError = error;
+        
+        // Don't retry for certain errors
+        if (error.code === 'CALL_EXCEPTION' || 
+            error.code === 'INSUFFICIENT_FUNDS' || 
+            error.code === 'USER_REJECTED') {
+          break;
+        }
+        
+        // If this is the last attempt, throw the error
+        if (attempt === maxRetries) {
+          break;
+        }
+        
+        // Wait before retrying (exponential backoff)
+        const delay = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
+        console.log(`Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    // If we get here, all retries failed
+    console.error('All retry attempts failed for receiveByRetailer');
+    
+    if (lastError.code === 'CALL_EXCEPTION') {
+      throw new Error(`Failed to receive product by retailer. You may not be authorized as a retailer or the product doesn't exist.`);
+    } else if (lastError.code === 'INSUFFICIENT_FUNDS') {
+      throw new Error('Insufficient funds for gas. Please add more ETH to your wallet.');
+    } else if (lastError.code === 'USER_REJECTED') {
+      throw new Error('Transaction was rejected by user.');
+    } else if (lastError.code === 'UNPREDICTABLE_GAS_LIMIT') {
+      throw new Error('Unable to estimate gas. The transaction may fail. Please try again.');
+    } else if (lastError.message && lastError.message.includes('Internal JSON-RPC error')) {
+      throw new Error('Network error occurred after multiple attempts. Please try again later.');
+    } else {
+      throw new Error(`Failed to receive product by retailer after ${maxRetries} attempts: ${lastError.message}`);
+    }
+  }
+
   // Receive product by distributor (Distributor only)
   async receiveByDistributor(productId: number, location: string): Promise<void> {
     if (!this.contract) {
@@ -1399,6 +1530,95 @@ class BlockchainService {
       throw new Error('Network error occurred after multiple attempts. Please try again later.');
     } else {
       throw new Error(`Failed to receive product in warehouse after ${maxRetries} attempts: ${lastError.message}`);
+    }
+  }
+
+  // Purchase product (Customer)
+  async purchaseProduct(productId: number, location: string): Promise<void> {
+    if (!this.contract) {
+      console.error('Contract not initialized. Provider:', this.provider, 'Signer:', this.signer, 'Contract:', this.contract);
+      throw new Error('Contract not initialized. Please ensure your wallet is connected and try refreshing the page.');
+    }
+
+    // Retry mechanism for intermittent network issues
+    const maxRetries = 3;
+    let lastError: any;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // Check product state before attempting to purchase
+        const productState = await this.getProductState(productId);
+        console.log(`Product ${productId} current state: ${productState} (${this.getProductStateString(productState)})`);
+        console.log(`Product ${productId} must be IN_STORE (state 4) to purchase`);
+        
+        if (productState !== 4) {
+          throw new Error(`Product must be in IN_STORE state (4) to purchase. Current state: ${productState} (${this.getProductStateString(productState)})`);
+        }
+
+        console.log(`Purchasing product ${productId} at ${location} (attempt ${attempt}/${maxRetries})`);
+        
+        // First, let's check if the function exists and estimate gas
+        try {
+          const gasEstimate = await this.contract.purchaseProduct.estimateGas(productId, location);
+          console.log('Gas estimate for purchaseProduct:', gasEstimate.toString());
+        } catch (gasError: any) {
+          console.error('Gas estimation failed for purchaseProduct:', gasError);
+          // Continue with transaction even if gas estimation fails
+        }
+        
+        const tx = await this.contract.purchaseProduct(productId, location, {
+          gasLimit: 500000 // Set a reasonable gas limit
+        });
+        console.log('Purchase product transaction sent:', tx.hash);
+        
+        const receipt = await tx.wait();
+        console.log('Product purchased successfully:', {
+          hash: tx.hash,
+          blockNumber: receipt?.blockNumber,
+          gasUsed: receipt?.gasUsed?.toString()
+        });
+        
+        // If we get here, the transaction was successful
+        return;
+        
+      } catch (error: any) {
+        console.error(`Error purchasing product (attempt ${attempt}/${maxRetries}):`, error);
+        lastError = error;
+        
+        // Don't retry for certain errors
+        if (error.code === 'CALL_EXCEPTION' || 
+            error.code === 'INSUFFICIENT_FUNDS' || 
+            error.code === 'USER_REJECTED') {
+          break;
+        }
+        
+        // If this is the last attempt, throw the error
+        if (attempt === maxRetries) {
+          break;
+        }
+        
+        // Wait before retrying (exponential backoff)
+        const delay = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
+        console.log(`Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    // If we get here, all retries failed
+    console.error('All retry attempts failed for purchaseProduct');
+    
+    if (lastError.code === 'CALL_EXCEPTION') {
+      throw new Error(`Failed to purchase product. The product may not be available for purchase or doesn't exist.`);
+    } else if (lastError.code === 'INSUFFICIENT_FUNDS') {
+      throw new Error('Insufficient funds for gas. Please add more ETH to your wallet.');
+    } else if (lastError.code === 'USER_REJECTED') {
+      throw new Error('Transaction was rejected by user.');
+    } else if (lastError.code === 'UNPREDICTABLE_GAS_LIMIT') {
+      throw new Error('Unable to estimate gas. The transaction may fail. Please try again.');
+    } else if (lastError.message && lastError.message.includes('Internal JSON-RPC error')) {
+      throw new Error('Network error occurred after multiple attempts. Please try again later.');
+    } else {
+      throw new Error(`Failed to purchase product after ${maxRetries} attempts: ${lastError.message}`);
     }
   }
 

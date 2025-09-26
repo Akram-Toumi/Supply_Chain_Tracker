@@ -18,10 +18,13 @@ interface BlockchainContextType {
   receiveInWarehouse: (productId: number, location: string) => Promise<void>;
   receiveByDistributor: (productId: number, location: string) => Promise<void>;
   deliverToRetailer: (productId: number, location: string) => Promise<void>;
+  receiveByRetailer: (productId: number, location: string) => Promise<void>;
   shipToDistributor: (productId: number, location: string) => Promise<void>;
   sellProduct: (productId: number, location: string) => Promise<void>;
+  purchaseProduct: (productId: number, location: string) => Promise<void>;
   getProductState: (productId: number) => Promise<number>;
   getProductInfo: (productId: number) => Promise<any>;
+  getProductHistory: (productId: number) => Promise<any[]>;
   getProductStateString: (state: number) => string;
   formatTimestamp: (timestamp: number) => string;
   // Role checking functions
@@ -266,6 +269,26 @@ export const BlockchainProvider: React.FC<BlockchainProviderProps> = ({ children
     }
   };
 
+  const receiveByRetailer = async (productId: number, location: string) => {
+    if (!isConnected) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      await blockchainService.receiveByRetailer(productId, location);
+      await refreshProducts(); // Refresh the products list
+    } catch (error: any) {
+      setError(error.message || 'Failed to receive product by retailer');
+      console.error('Error receiving product by retailer:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const shipToDistributor = async (productId: number, location: string) => {
     if (!isConnected) {
       throw new Error('Wallet not connected');
@@ -306,6 +329,26 @@ export const BlockchainProvider: React.FC<BlockchainProviderProps> = ({ children
     }
   };
 
+  const purchaseProduct = async (productId: number, location: string) => {
+    if (!isConnected) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      await blockchainService.purchaseProduct(productId, location);
+      await refreshProducts(); // Refresh the products list
+    } catch (error: any) {
+      setError(error.message || 'Failed to purchase product');
+      console.error('Error purchasing product:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getProductState = async (productId: number): Promise<number> => {
     if (!isConnected) {
       throw new Error('Wallet not connected');
@@ -328,6 +371,19 @@ export const BlockchainProvider: React.FC<BlockchainProviderProps> = ({ children
       return await blockchainService.getProductInfo(productId);
     } catch (error: any) {
       console.error('Error getting product info:', error);
+      throw error;
+    }
+  };
+
+  const getProductHistory = async (productId: number) => {
+    if (!isConnected) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      return await blockchainService.getProductHistory(productId);
+    } catch (error: any) {
+      console.error('Error getting product history:', error);
       throw error;
     }
   };
@@ -419,10 +475,13 @@ export const BlockchainProvider: React.FC<BlockchainProviderProps> = ({ children
     receiveInWarehouse,
     receiveByDistributor,
     deliverToRetailer,
+    receiveByRetailer,
     shipToDistributor,
     sellProduct,
+    purchaseProduct,
     getProductState,
     getProductInfo,
+    getProductHistory,
     getProductStateString,
     formatTimestamp,
     isProducer,

@@ -26,7 +26,7 @@ const ProductScanner = () => {
 
   const handleScan = () => {
     setIsScanning(true);
-    // Simulate scanning process
+    // Simulate scanning process for inventory management
     setTimeout(() => {
       setScanResult({
         name: 'Organic Coffee Beans',
@@ -59,7 +59,7 @@ const ProductScanner = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Scanner Section */}
         <div className="bg-[#1F2937] p-6 rounded-lg">
-          <h2 className="text-xl font-bold text-white mb-4">Retailer Product Scanner</h2>
+          <h2 className="text-xl font-bold text-white mb-4">Inventory Management Scanner</h2>
           <div className="space-y-6">
             <div className="flex items-center space-x-4 bg-[#374151] p-3 rounded">
               <span className="material-icons text-gray-400">qr_code_scanner</span>
@@ -103,19 +103,19 @@ const ProductScanner = () => {
 
         {/* Instructions */}
         <div className="bg-[#1F2937] p-6 rounded-lg">
-          <h3 className="text-xl font-bold text-white mb-4">Retailer Scanning Guide</h3>
+          <h3 className="text-xl font-bold text-white mb-4">Inventory Management Guide</h3>
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
               <span className="material-icons text-primary">looks_one</span>
-              <p className="text-gray-300">Scan product QR codes to verify inventory and track product authenticity</p>
+              <p className="text-gray-300">Scan product QR codes to manage inventory and track stock levels</p>
             </div>
             <div className="flex items-start space-x-3">
               <span className="material-icons text-primary">looks_two</span>
-              <p className="text-gray-300">Verify product authenticity and check supply chain history for customer confidence</p>
+              <p className="text-gray-300">Update product status and manage retail operations efficiently</p>
             </div>
             <div className="flex items-start space-x-3">
               <span className="material-icons text-primary">looks_3</span>
-              <p className="text-gray-300">Access complete product details, certifications, and supply chain transparency for customers</p>
+              <p className="text-gray-300">Access product details and manage store inventory for optimal retail operations</p>
             </div>
           </div>
         </div>

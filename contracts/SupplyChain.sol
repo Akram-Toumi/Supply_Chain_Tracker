@@ -310,19 +310,22 @@ contract SupplyChain {
         validProduct(_productId) 
     {
         Product storage product = products[_productId];
-        require(product.currentState == ProductState.IN_STORE, "Product must be in store");
+        require(product.currentState == ProductState.DISTRIBUTED, "Product must be distributed");
 
+        product.currentState = ProductState.IN_STORE;
         product.currentOwner = msg.sender;
         product.lastUpdated = block.timestamp;
 
         productHistory[_productId].push(Transaction({
             productId: _productId,
-            fromState: ProductState.IN_STORE,
+            fromState: ProductState.DISTRIBUTED,
             toState: ProductState.IN_STORE,
             actor: msg.sender,
             timestamp: block.timestamp,
             location: _location
         }));
+
+        emit StateChanged(_productId, ProductState.DISTRIBUTED, ProductState.IN_STORE, msg.sender);
     }
 
     function sellProduct(uint256 _productId, string memory _location) 
@@ -333,6 +336,29 @@ contract SupplyChain {
         Product storage product = products[_productId];
         require(product.currentState == ProductState.IN_STORE, "Product must be in store");
         require(product.currentOwner == msg.sender, "You don't own this product");
+
+        product.currentState = ProductState.SOLD;
+        product.currentOwner = address(0); // No owner after sale
+        product.lastUpdated = block.timestamp;
+
+        productHistory[_productId].push(Transaction({
+            productId: _productId,
+            fromState: ProductState.IN_STORE,
+            toState: ProductState.SOLD,
+            actor: msg.sender,
+            timestamp: block.timestamp,
+            location: _location
+        }));
+
+        emit StateChanged(_productId, ProductState.IN_STORE, ProductState.SOLD, msg.sender);
+    }
+
+    function purchaseProduct(uint256 _productId, string memory _location) 
+        external 
+        validProduct(_productId) 
+    {
+        Product storage product = products[_productId];
+        require(product.currentState == ProductState.IN_STORE, "Product must be in store");
 
         product.currentState = ProductState.SOLD;
         product.currentOwner = address(0); // No owner after sale
