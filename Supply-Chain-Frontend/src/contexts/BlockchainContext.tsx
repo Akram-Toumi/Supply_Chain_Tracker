@@ -25,6 +25,7 @@ interface BlockchainContextType {
   getProductState: (productId: number) => Promise<number>;
   getProductInfo: (productId: number) => Promise<any>;
   getProductHistory: (productId: number) => Promise<any[]>;
+  getAllProducerTransactions: () => Promise<any[]>;
   getProductStateString: (state: number) => string;
   formatTimestamp: (timestamp: number) => string;
   // Role checking functions
@@ -388,6 +389,19 @@ export const BlockchainProvider: React.FC<BlockchainProviderProps> = ({ children
     }
   };
 
+  const getAllProducerTransactions = async () => {
+    if (!isConnected) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      return await blockchainService.getAllProducerTransactions();
+    } catch (error: any) {
+      console.error('Error getting all producer transactions:', error);
+      throw error;
+    }
+  };
+
   const getProductStateString = (state: ProductState): string => {
     return blockchainService.getProductStateString(state);
   };
@@ -482,6 +496,7 @@ export const BlockchainProvider: React.FC<BlockchainProviderProps> = ({ children
     getProductState,
     getProductInfo,
     getProductHistory,
+    getAllProducerTransactions,
     getProductStateString,
     formatTimestamp,
     isProducer,

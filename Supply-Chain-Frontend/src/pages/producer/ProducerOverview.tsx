@@ -24,6 +24,7 @@ const ProducerOverview = () => {
     loading, 
     error,
     refreshProducts,
+    getAllProducerTransactions,
     getProductStateString,
     formatTimestamp
   } = useBlockchain();
@@ -81,6 +82,40 @@ const ProducerOverview = () => {
     }
   };
 
+  const downloadTransactions = async () => {
+    try {
+      const transactions = await getAllProducerTransactions();
+      
+      // Create CSV content
+      const csvContent = [
+        'Product ID,From State,To State,Actor,Timestamp,Location,Date',
+        ...transactions.map(tx => [
+          tx.productId,
+          getProductStateString(tx.fromState),
+          getProductStateString(tx.toState),
+          tx.actor,
+          tx.timestamp,
+          tx.location,
+          formatTimestamp(tx.timestamp)
+        ].join(','))
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `producer_transactions_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading transactions:', error);
+      alert('Failed to download transactions. Please try again.');
+    }
+  };
+
   const getStateColor = (state: number) => {
     switch (state) {
       case 0: return 'bg-blue-100 text-blue-800';
@@ -112,6 +147,13 @@ const ProducerOverview = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Producer Overview</h1>
         <div className="flex space-x-4">
+          <button
+            onClick={downloadTransactions}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
+          >
+            <span className="material-icons text-sm mr-2">download</span>
+            Download Transactions
+          </button>
           <button
             onClick={refreshProducts}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
@@ -272,7 +314,7 @@ const ProducerOverview = () => {
       {/* Quick Actions */}
       <div className="bg-[#1F2937] rounded-lg p-6">
         <h3 className="text-lg font-medium text-white mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <a 
             href="/producer/products" 
             className="p-4 bg-[#374151] rounded-lg hover:bg-[#4B5563] transition-colors"
@@ -295,6 +337,19 @@ const ProducerOverview = () => {
               <div>
                 <p className="text-white font-medium">Manage Products</p>
                 <p className="text-gray-400 text-sm">View and ship your products</p>
+              </div>
+            </div>
+          </a>
+          
+          <a 
+            href="/producer/download" 
+            className="p-4 bg-[#374151] rounded-lg hover:bg-[#4B5563] transition-colors"
+          >
+            <div className="flex items-center space-x-3">
+              <span className="material-icons text-green-400">download</span>
+              <div>
+                <p className="text-white font-medium">Download Transactions</p>
+                <p className="text-gray-400 text-sm">Export transaction data to CSV</p>
               </div>
             </div>
           </a>

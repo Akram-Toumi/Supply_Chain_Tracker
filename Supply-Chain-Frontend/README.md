@@ -65,15 +65,15 @@ Before you begin, ensure you have the following installed:
 ## 🚀 Quick Start
 
 ### 1. Clone the Repository
-```bash
-git clone https://github.com/Akram-Toumi/Supply_Chain_Tracker.git
-cd Supply-Chain-Frontend
-```
+   ```bash
+   git clone https://github.com/Akram-Toumi/Supply_Chain_Tracker.git
+   cd Supply-Chain-Frontend
+   ```
 
 ### 2. Install Dependencies
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 ### 3. Environment Setup
 ```bash
@@ -82,11 +82,11 @@ cp env.example .env.local
 ```
 
 ### 4. Start Development Server
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
-The application will be available at `http://localhost:5173`.
+   The application will be available at `http://localhost:5173`.
 
 ## ⚙️ Environment Configuration
 
@@ -279,10 +279,10 @@ npm run dev
 ```
 
 ### Production Build
-```bash
-npm run build
-```
-Output will be in the `dist/` directory.
+   ```bash
+   npm run build
+   ```
+   Output will be in the `dist/` directory.
 
 ### Deployment Options
 

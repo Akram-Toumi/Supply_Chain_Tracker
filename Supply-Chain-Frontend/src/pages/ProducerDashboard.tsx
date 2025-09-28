@@ -2,6 +2,7 @@ import Layout from '../layouts/Layout';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProducerOverview from './producer/ProducerOverview';
 import ProductsList from './producer/ProductsList';
+import DownloadTransactions from './producer/DownloadTransactions';
 import DashboardSidebar from '../components/DashboardSidebar';
 
 const ProducerDashboard = () => {
@@ -15,6 +16,11 @@ const ProducerDashboard = () => {
       title: 'Products',
       path: '/producer/products',
       icon: 'inventory_2'
+    },
+    {
+      title: 'Download Transactions',
+      path: '/producer/download',
+      icon: 'download'
     }
   ];
 
@@ -24,6 +30,7 @@ const ProducerDashboard = () => {
         <Route index element={<Navigate to="overview" replace />} />
         <Route path="overview" element={<ProducerOverview />} />
         <Route path="products" element={<ProductsList />} />
+        <Route path="download" element={<DownloadTransactions />} />
       </Routes>
     </Layout>
   );

@@ -745,6 +745,42 @@ class BlockchainService {
     }
   }
 
+  // Get all transactions for a producer
+  async getAllProducerTransactions(): Promise<ProductTransaction[]> {
+    if (!this.contract) {
+      throw new Error('Contract not initialized');
+    }
+
+    try {
+      const productCount = await this.contract.productCount();
+      const allTransactions: ProductTransaction[] = [];
+
+      // Get all products and their transaction histories
+      for (let i = 1; i <= productCount; i++) {
+        try {
+          const product = await this.contract.products(i);
+          const producer = product.producer;
+          
+          // Check if current user is the producer of this product
+          if (this.signer && producer.toLowerCase() === (await this.signer.getAddress()).toLowerCase()) {
+            const history = await this.getProductHistory(i);
+            allTransactions.push(...history);
+          }
+        } catch (error) {
+          // Skip products that don't exist or can't be accessed
+          console.warn(`Could not access product ${i}:`, error);
+          continue;
+        }
+      }
+
+      // Sort transactions by timestamp (newest first)
+      return allTransactions.sort((a, b) => b.timestamp - a.timestamp);
+    } catch (error) {
+      console.error('Error getting all producer transactions:', error);
+      throw error;
+    }
+  }
+
   // Ship product (Producer only)
   async shipProduct(productId: number, location: string): Promise<void> {
     if (!this.contract) {
