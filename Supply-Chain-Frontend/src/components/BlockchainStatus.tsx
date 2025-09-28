@@ -40,7 +40,7 @@ const BlockchainStatus: React.FC = () => {
       
       <div className="mt-3 text-xs text-gray-400 flex items-center">
         <span className="mr-1">📄</span>
-        Contract: {formatAddress('0x7Ec09D73227fD4aa173860b8Fb85E9CDd404277a')}
+        Contract: {formatAddress(import.meta.env.VITE_CONTRACT_ADDRESS || '0x7Ec09D73227fD4aa173860b8Fb85E9CDd404277a')}
       </div>
     </div>
   );

@@ -1,9 +1,11 @@
+require('dotenv').config();
+
 module.exports = {
   networks: {
     development: {
-      host: "127.0.0.1",
-      port: 7545,
-      network_id: "*" 
+      host: process.env.TRUFFLE_HOST || "127.0.0.1",
+      port: parseInt(process.env.TRUFFLE_PORT) || 7545,
+      network_id: process.env.TRUFFLE_NETWORK_ID || "*" 
     }
   },
   compilers: {

@@ -108,11 +108,21 @@ src/
    ```
 
 3. **Environment Setup**
-   - Copy `.env.example` to `.env.local` (if provided) and add your API endpoints, such as blockchain backend URLs or authentication secrets.
-   - Example `.env`:
+   - Copy `env.example` to `.env.local` and configure your environment variables:
+     ```bash
+     cp env.example .env.local
      ```
+   - Configure the following variables in `.env.local`:
+     ```
+     # Blockchain Configuration
+     VITE_CONTRACT_ADDRESS=
+     VITE_RPC_URL=http://127.0.0.1:7545
+     VITE_RPC_URL_BACKUP=http://127.0.0.1:8545
+     VITE_CHAIN_ID=1337
+     VITE_CHAIN_NAME=Ganache Local
+     
+     # API Configuration (if needed)
      VITE_API_URL=http://localhost:3001/api
-     VITE_BLOCKCHAIN_RPC=https://your-blockchain-rpc.com
      ```
 
 4. **Run the Development Server**

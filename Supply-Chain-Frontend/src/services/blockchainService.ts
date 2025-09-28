@@ -480,8 +480,8 @@ const SUPPLY_CHAIN_ABI = [
   }
 ];
 
-// Contract address
-const CONTRACT_ADDRESS = '0x17864E042aC345b139b4052b8076d9E4DF2Be3BB';
+// Contract address - loaded from environment variables
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x17864E042aC345b139b4052b8076d9E4DF2Be3BB';
 
 // Product states enum - must match contract
 export const ProductState = {
@@ -545,13 +545,14 @@ class BlockchainService {
       });
 
       // Ensure we're on the local development network (Ganache/Truffle: Chain ID 1337)
+      const expectedChainId = parseInt(import.meta.env.VITE_CHAIN_ID || '1337');
       try {
-        if (network.chainId !== 1337n) {
-          console.warn(`Detected chainId ${network.chainId.toString()} - attempting to switch to 1337 (Ganache/Truffle)`);
-          // Try to switch to chain 1337
+        if (network.chainId !== BigInt(expectedChainId)) {
+          console.warn(`Detected chainId ${network.chainId.toString()} - attempting to switch to ${expectedChainId} (Ganache/Truffle)`);
+          // Try to switch to the expected chain
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x539' }], // 1337 in hex
+            params: [{ chainId: `0x${expectedChainId.toString(16)}` }],
           });
 
           // Recreate provider/signer after switch
@@ -565,10 +566,13 @@ class BlockchainService {
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
               params: [{
-                chainId: '0x539', // 1337
-                chainName: 'Ganache Local',
+                chainId: `0x${expectedChainId.toString(16)}`,
+                chainName: import.meta.env.VITE_CHAIN_NAME || 'Ganache Local',
                 nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-                rpcUrls: ['http://127.0.0.1:7545', 'http://127.0.0.1:8545'],
+                rpcUrls: [
+                  import.meta.env.VITE_RPC_URL || 'http://127.0.0.1:7545',
+                  import.meta.env.VITE_RPC_URL_BACKUP || 'http://127.0.0.1:8545'
+                ],
               }],
             });
           } catch (addError) {

@@ -28,6 +28,34 @@ A blockchain-based supply chain tracking system built with Ethereum, Truffle, an
 ### Prerequisites
 - Node.js (v16+)
 - npm or yarn
+
+### Environment Configuration
+
+1. **Copy the environment template**:
+   ```bash
+   cp env.example .env
+   ```
+
+2. **Configure your environment variables** in `.env`:
+   ```bash
+   # Blockchain Configuration
+   VITE_CONTRACT_ADDRESS=
+   VITE_RPC_URL=http://127.0.0.1:7545
+   VITE_RPC_URL_BACKUP=http://127.0.0.1:8545
+   VITE_CHAIN_ID=1337
+   VITE_CHAIN_NAME=Ganache Local
+
+   # Truffle Configuration
+   TRUFFLE_HOST=127.0.0.1
+   TRUFFLE_PORT=7545
+   TRUFFLE_NETWORK_ID=*
+   ```
+
+3. **For the frontend**, also copy the frontend environment template:
+   ```bash
+   cd Supply-Chain-Frontend
+   cp env.example .env.local
+   ```
 - Ganache or local Ethereum node
 - MetaMask browser extension
 
@@ -171,13 +199,6 @@ Supply_Chain_Tracker/
 3. Build frontend: `npm run build`
 4. Deploy to hosting service
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
 
 ## 📄 License
 

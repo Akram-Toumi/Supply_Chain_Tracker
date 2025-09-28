@@ -6,6 +6,7 @@ build/
 
 # Environment variables
 .env
+.env.local
 
 # VSCode settings
 .vscode/

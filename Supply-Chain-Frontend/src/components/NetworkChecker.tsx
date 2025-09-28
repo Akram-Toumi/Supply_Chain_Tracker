@@ -19,7 +19,7 @@ const NetworkChecker: React.FC = () => {
   const [contractInfo, setContractInfo] = useState<ContractInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const CONTRACT_ADDRESS = '0x7Ec09D73227fD4aa173860b8Fb85E9CDd404277a';
+  const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x7Ec09D73227fD4aa173860b8Fb85E9CDd404277a';
 
   useEffect(() => {
     if (isConnected && window.ethereum) {
